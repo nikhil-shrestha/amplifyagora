@@ -69,9 +69,9 @@ function App() {
               <Route exact path="/profile" component={ProfilePage} />
               <Route
                 exact
-                path="/market/:marketId"
+                path="/markets/:marketId"
                 component={({ match }) => (
-                  <MarketPage marketId={match.params.marketId} />
+                  <MarketPage user={user} marketId={match.params.marketId} />
                 )}
               />
             </Switch>
