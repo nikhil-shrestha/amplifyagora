@@ -16,6 +16,15 @@ import { UserContext } from '../App';
 const NewMarket = () => {
   const [addMarketDialog, setAddMarketDialog] = useState(false);
   const [name, setName] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [options, setOptions] = useState([]);
+  const [tags] = useState([
+    'Arts',
+    'Web Development',
+    'Technology',
+    'Crafts',
+    'Entertainment',
+  ]);
 
   const handleAddMarket = async (user) => {
     console.log(name);
@@ -24,6 +33,7 @@ const NewMarket = () => {
       const input = {
         name,
         owner: user.username,
+        tags: selectedTags,
       };
 
       const { data } = await API.graphql(
@@ -32,13 +42,22 @@ const NewMarket = () => {
         })
       );
       console.log(`Created market: id ${data.createMarket.id}`);
+      console.log({ data });
       setName('');
+      setSelectedTags('');
     } catch (err) {
       Notification.error({
         title: 'Error',
         message: `${err.message || 'Error adding markder'}`,
       });
     }
+  };
+
+  const handleFilterTags = (query) => {
+    const options = tags
+      .map((tag) => ({ value: tag, label: tag }))
+      .filter((tag) => tag.label.toLowerCase().includes(query.toLowerCase()));
+    setOptions(options);
   };
 
   return (
@@ -73,6 +92,24 @@ const NewMarket = () => {
                     onChange={(name) => setName(name)}
                     value={name}
                   />
+                </Form.Item>
+                <Form.Item label="Add Tags">
+                  <Select
+                    multiple={true}
+                    filterable={true}
+                    placeholder="Market Tags"
+                    onChange={(selectedTags) => setSelectedTags(selectedTags)}
+                    remoteMethod={handleFilterTags}
+                    remote={true}
+                  >
+                    {options.map((option) => (
+                      <Select.Option
+                        key={option.value}
+                        label={option.label}
+                        value={option.value}
+                      />
+                    ))}
+                  </Select>
                 </Form.Item>
               </Form>
             </Dialog.Body>
