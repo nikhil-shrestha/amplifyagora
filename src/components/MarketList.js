@@ -6,10 +6,25 @@ import { Loading, Card, Icon, Tag } from 'element-react';
 
 import Error from './Error';
 import { listMarkets } from '../graphql/queries';
+import { onCreateMarket } from '../graphql/subscriptions';
 
 const MarketList = () => {
+  const onNewMarket = (prevQuery, newData) => {
+    let updatedQuery = { ...prevQuery };
+    const updatedMarketList = [
+      newData.onCreateMarket,
+      ...prevQuery.listMarkets.items,
+    ];
+    updatedQuery.listMarkets.items = updatedMarketList;
+    return updatedQuery;
+  };
+
   return (
-    <Connect query={graphqlOperation(listMarkets)}>
+    <Connect
+      query={graphqlOperation(listMarkets)}
+      subscription={graphqlOperation(onCreateMarket)}
+      onSubscriptionMsg={onNewMarket}
+    >
       {({ data, loading, errors }) => {
         if (errors.length > 0) return <Error errors={errors} />;
         if (loading || !data.listMarkets) return <Loading fullscreen={true} />;
