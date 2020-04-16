@@ -10,6 +10,8 @@ import MarketPage from './pages/MarketPage';
 
 import './App.css';
 
+export const UserContext = React.createContext();
+
 function App() {
   const [user, setUser] = useState(null);
 
@@ -55,26 +57,28 @@ function App() {
   return !user ? (
     <Authenticator theme={theme} />
   ) : (
-    <Router>
-      <>
-        {/* Navigation */}
-        <Navbar user={user} handleSignout={handleSignout} />
-        {/* Routes */}
-        <div className="app-container">
-          <Switch>
-            <Route exact path="/" component={HomePage} />
-            <Route exact path="/profile" component={ProfilePage} />
-            <Route
-              exact
-              path="/market/:marketId"
-              component={({ match }) => (
-                <MarketPage marketId={match.params.marketId} />
-              )}
-            />
-          </Switch>
-        </div>
-      </>
-    </Router>
+    <UserContext.Provider value={{ user }}>
+      <Router>
+        <>
+          {/* Navigation */}
+          <Navbar user={user} handleSignout={handleSignout} />
+          {/* Routes */}
+          <div className="app-container">
+            <Switch>
+              <Route exact path="/" component={HomePage} />
+              <Route exact path="/profile" component={ProfilePage} />
+              <Route
+                exact
+                path="/market/:marketId"
+                component={({ match }) => (
+                  <MarketPage marketId={match.params.marketId} />
+                )}
+              />
+            </Switch>
+          </div>
+        </>
+      </Router>
+    </UserContext.Provider>
   );
 }
 

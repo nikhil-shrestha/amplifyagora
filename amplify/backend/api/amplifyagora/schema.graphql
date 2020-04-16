@@ -1,7 +1,8 @@
 type Market @model @searchable {
   id: ID!
   name: String!
-  producs: [Product] @connection(name: "MarketProducts", sortField: "createdAt")
+  products: [Product]
+    @connection(name: "MarketProducts", sortField: "createdAt")
   tags: [String]
   owner: String!
   createdAt: String
