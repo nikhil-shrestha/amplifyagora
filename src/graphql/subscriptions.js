@@ -6,7 +6,7 @@ export const onCreateMarket = /* GraphQL */ `
     onCreateMarket {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -28,7 +28,7 @@ export const onUpdateMarket = /* GraphQL */ `
     onUpdateMarket {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -50,7 +50,7 @@ export const onDeleteMarket = /* GraphQL */ `
     onDeleteMarket {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -75,7 +75,7 @@ export const onCreateProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -102,7 +102,7 @@ export const onUpdateProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -129,7 +129,7 @@ export const onDeleteProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags

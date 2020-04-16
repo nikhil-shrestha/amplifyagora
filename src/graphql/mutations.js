@@ -9,7 +9,7 @@ export const createMarket = /* GraphQL */ `
     createMarket(input: $input, condition: $condition) {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -34,7 +34,7 @@ export const updateMarket = /* GraphQL */ `
     updateMarket(input: $input, condition: $condition) {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -59,7 +59,7 @@ export const deleteMarket = /* GraphQL */ `
     deleteMarket(input: $input, condition: $condition) {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -87,7 +87,7 @@ export const createProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -117,7 +117,7 @@ export const updateProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -147,7 +147,7 @@ export const deleteProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags

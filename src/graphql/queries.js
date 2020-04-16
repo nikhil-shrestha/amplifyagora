@@ -6,7 +6,7 @@ export const getMarket = /* GraphQL */ `
     getMarket(id: $id) {
       id
       name
-      producs {
+      products {
         items {
           id
           description
@@ -33,7 +33,7 @@ export const listMarkets = /* GraphQL */ `
       items {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -52,7 +52,7 @@ export const getProduct = /* GraphQL */ `
       market {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
@@ -135,7 +135,7 @@ export const searchMarkets = /* GraphQL */ `
       items {
         id
         name
-        producs {
+        products {
           nextToken
         }
         tags
