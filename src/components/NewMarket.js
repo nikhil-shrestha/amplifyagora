@@ -13,7 +13,15 @@ import { createMarket } from '../graphql/mutations';
 
 import { UserContext } from '../App';
 
-const NewMarket = () => {
+const NewMarket = (props) => {
+  const {
+    searchTerm,
+    isSearching,
+    handleSearchChange,
+    handleClearSearch,
+    handleSearch,
+  } = props;
+
   const [addMarketDialog, setAddMarketDialog] = useState(false);
   const [name, setName] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -27,7 +35,6 @@ const NewMarket = () => {
   ]);
 
   const handleAddMarket = async (user) => {
-    console.log(name);
     try {
       setAddMarketDialog(false);
       const input = {
@@ -74,6 +81,28 @@ const NewMarket = () => {
                 onClick={() => setAddMarketDialog(true)}
               />
             </h1>
+
+            <Form inline={true} onSubmit={handleSearch}>
+              <Form.Item>
+                <Input
+                  placeholder="Search Markets..."
+                  value={searchTerm}
+                  icon="circle-cross"
+                  onIconClick={handleClearSearch}
+                  onChange={handleSearchChange}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  type="info"
+                  icon="search"
+                  onClick={handleSearch}
+                  loading={isSearching}
+                >
+                  Search
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
 
           <Dialog

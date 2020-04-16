@@ -29,14 +29,13 @@ const MarketList = () => {
         if (errors.length > 0) return <Error errors={errors} />;
         if (loading || !data.listMarkets) return <Loading fullscreen={true} />;
 
-        console.log(data.listMarkets);
-
         return (
           <>
             <h2 className="header">
               <img
                 src="https://icon.now.sh/store_mall_directory/527FFF"
                 alt="Store Icon"
+                className="large-icon"
               />
               Markets
             </h2>
