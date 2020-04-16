@@ -1,12 +1,10 @@
-import React from "react";
+import React from 'react';
 // import { Loading, Tabs, Icon } from "element-react";
 
-class MarketPage extends React.Component {
-  state = {};
+const MarketPage = (props) => {
+  const { marketId } = props;
 
-  render() {
-    return <div>MarketPage</div>;
-  }
-}
+  return <div>MarketPage {marketId}</div>;
+};
 
 export default MarketPage;

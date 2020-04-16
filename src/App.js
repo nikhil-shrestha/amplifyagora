@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Auth, Hub } from 'aws-amplify';
 import { Authenticator, AmplifyTheme } from 'aws-amplify-react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
+import MarketPage from './pages/MarketPage';
 
 import './App.css';
 
@@ -37,7 +43,39 @@ function App() {
     setUser(null);
   };
 
-  return !user ? <Authenticator theme={theme} /> : <div>App</div>;
+  const handleSignout = async () => {
+    try {
+      await Auth.signOut();
+      setUser(null);
+    } catch (err) {
+      console.warn('Error signing out user', err);
+    }
+  };
+
+  return !user ? (
+    <Authenticator theme={theme} />
+  ) : (
+    <Router>
+      <>
+        {/* Navigation */}
+        <Navbar user={user} handleSignout={handleSignout} />
+        {/* Routes */}
+        <div className="app-container">
+          <Switch>
+            <Route exact path="/" component={HomePage} />
+            <Route exact path="/profile" component={ProfilePage} />
+            <Route
+              exact
+              path="/market/:marketId"
+              component={({ match }) => (
+                <MarketPage marketId={match.params.marketId} />
+              )}
+            />
+          </Switch>
+        </div>
+      </>
+    </Router>
+  );
 }
 
 const theme = {
