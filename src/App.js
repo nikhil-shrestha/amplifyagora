@@ -100,7 +100,11 @@ function App() {
           <div className="app-container">
             <Switch>
               <Route exact path="/" component={HomePage} />
-              <Route exact path="/profile" component={ProfilePage} />
+              <Route
+                exact
+                path="/profile"
+                component={() => <ProfilePage user={user} />}
+              />
               <Route
                 exact
                 path="/markets/:marketId"
