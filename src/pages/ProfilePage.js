@@ -24,7 +24,7 @@ const getUser = `
       username
       email
       registered
-      orders {
+      orders(sortDirection: DESC) {
         items {
           id
           createdAt
