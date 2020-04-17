@@ -15,7 +15,7 @@ import {
 import PayButton from './PayButton';
 
 import { UserContext } from '../App';
-import { updateProduct } from '../graphql/mutations';
+import { updateProduct, deleteProduct } from '../graphql/mutations';
 import { convertCentsToDollar, convertDollarsToCents } from '../utils';
 
 const Product = (props) => {
@@ -27,6 +27,7 @@ const Product = (props) => {
     shipped: false,
   });
   const [updateProductDialog, setUpdateProductDialog] = useState(false);
+  const [deleteProductDialog, setDeleteProductDialog] = useState(false);
 
   const { description, price, shipped } = formData;
 
@@ -56,6 +57,25 @@ const Product = (props) => {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+    try {
+      setDeleteProductDialog(false);
+      const input = {
+        id: productId,
+      };
+      await API.graphql(graphqlOperation(deleteProduct, { input }));
+      Notification({
+        title: 'Success',
+        message: 'Product successfully deleted!',
+        type: 'success',
+        duration: 2000,
+      });
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (err) {
+      console.log(`Failed to delete product with id: ${productId}`, err);
+    }
+  };
+
   return (
     <UserContext.Consumer>
       {({ user }) => {
@@ -77,7 +97,7 @@ const Product = (props) => {
                 <div className="items-center">
                   <img
                     src={`https://icon.now.sh/${
-                      product.shipped ? 'markunrad_mailbox' : 'mail'
+                      product.shipped ? 'markunread_mailbox' : 'mail'
                     }`}
                     alt="Shipping Icon"
                     className="icon"
@@ -109,19 +129,48 @@ const Product = (props) => {
                       });
                     }}
                   />
-
-                  <Button
-                    type="danger"
-                    icon="delete"
-                    className="m-1"
-                    onClick={() => setUpdateProductDialog(true)}
-                  />
+                  <Popover
+                    placement="top"
+                    width="160"
+                    trigger="click"
+                    visible={deleteProductDialog}
+                    content={
+                      <>
+                        <p>Do you want to delete this?</p>
+                        <div className="text-right">
+                          <Button
+                            size="mini"
+                            type="text"
+                            className="m-1"
+                            onClick={() => setDeleteProductDialog(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="primary"
+                            size="mini"
+                            className="m-1"
+                            onClick={() => handleDeleteProduct(product.id)}
+                          >
+                            Confirm
+                          </Button>
+                        </div>
+                      </>
+                    }
+                  >
+                    <Button
+                      onClick={() => setDeleteProductDialog(true)}
+                      type="danger"
+                      icon="delete"
+                      className="m-1"
+                    />
+                  </Popover>
                 </>
               )}
             </div>
             {/* Update Product Dialog */}
             <Dialog
-              title="Update Produc"
+              title="Update Product"
               size="large"
               customClass="dialog"
               visible={updateProductDialog}
