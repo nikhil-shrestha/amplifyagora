@@ -54,15 +54,17 @@ const PayButton = ({ product, user }) => {
 
       if (result.charge.status === 'succeeded') {
         let shippingAddress = null;
-        if (product.shipped) {
-          shippingAddress = createShippingAddress(result.charge.source);
-        }
+        // if (product.shipped) {
+        //   shippingAddress = createShippingAddress(result.charge.source);
+        // }
 
         const input = {
           orderUserId: user.attributes.sub,
           orderProductId: product.id,
           shippingAddress,
         };
+
+        console.log({ input });
 
         const order = await API.graphql(
           graphqlOperation(createOrder, { input })
