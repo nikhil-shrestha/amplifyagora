@@ -1,21 +1,8 @@
-/*
-Copyright 2017 - 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-    http://aws.amazon.com/apache2.0/
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and limitations under the License.
-*/
-
-/* Amplify Params - DO NOT EDIT
-You can access the following resource attributes as environment variables from your Lambda function
-var environment = process.env.ENV
-var region = process.env.REGION
-
-Amplify Params - DO NOT EDIT */
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+require('dotenv').config();
+var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // declare a new express app
 var app = express();
@@ -36,9 +23,21 @@ app.use(function (req, res, next) {
  * Example post method *
  ****************************/
 
-app.post('/charge', function (req, res) {
-  // Add your code here
-  res.json({ success: 'post call succeed!', url: req.url, body: req.body });
+app.post('/charge', async (req, res) => {
+  const { token } = req.body;
+  const { currency, amount, description } = req.body.charge;
+
+  try {
+    const charge = await stripe.charges.create({
+      source: token.id,
+      amount,
+      currency,
+      description,
+    });
+    res.json(charge);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 });
 
 app.listen(3000, function () {
