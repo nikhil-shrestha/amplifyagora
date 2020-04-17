@@ -68,7 +68,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "amplify-amplifyagora-master-122502-deployment",
-					"S3Key": "amplify-builds/orderlambda-514f6a6b556e48506d4b-build.zip"
+					"S3Key": "amplify-builds/orderlambda-324a6c4c3351474e6141-build.zip"
 				}
 			}
 		},
