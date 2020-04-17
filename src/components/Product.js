@@ -108,7 +108,9 @@ const Product = (props) => {
                   <span className="mx-1">
                     ${convertCentsToDollar(product.price)}
                   </span>
-                  {!isProductOwner && <PayButton />}
+                  {!isProductOwner && (
+                    <PayButton product={product} user={user} />
+                  )}
                 </div>
               </div>
             </Card>
