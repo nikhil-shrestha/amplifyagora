@@ -1,7 +1,9 @@
 import React from 'react';
-import { API } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import StripeCheckout from 'react-stripe-checkout';
 // import { Notification, Message } from "element-react";
+
+import { getUser } from '../graphql/queries';
 
 const stripeConfig = {
   currency: 'USD',
@@ -9,8 +11,21 @@ const stripeConfig = {
 };
 
 const PayButton = ({ product, user }) => {
+  const getOwnerEmail = async (ownerId) => {
+    try {
+      const input = { id: ownerId };
+
+      const { data } = await API.graphql(graphqlOperation(getUser, input));
+      return data.getUser.email;
+    } catch (err) {
+      console.error(`Error fetching produc owner's email `, err);
+    }
+  };
+
   const handleCharge = async (token) => {
     try {
+      const ownerEmail = await getOwnerEmail(product.owner);
+      console.log({ ownerEmail });
       const result = await API.post('orderlamda', '/charge', {
         body: {
           token,
@@ -18,6 +33,11 @@ const PayButton = ({ product, user }) => {
             currency: stripeConfig.currency,
             amount: product.price,
             descript: product.description,
+          },
+          email: {
+            customerEmail: user.attributes.email,
+            ownerEmail,
+            shipped: product.shipped,
           },
         },
       });
@@ -35,8 +55,8 @@ const PayButton = ({ product, user }) => {
       amount={product.price}
       currency={stripeConfig.currency}
       stripeKey={stripeConfig.publishableAPIKey}
-      shippingAddress={product.shipped}
-      billingAddress={product.shipped}
+      // shippingAddress={product.shipped}
+      // billingAddress={product.shipped}
       locale="auto"
       allowRememberMe={false}
     />

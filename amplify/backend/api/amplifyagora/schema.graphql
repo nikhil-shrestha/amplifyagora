@@ -12,7 +12,11 @@ type Product
   @model
   @auth(
     rules: [
-      { allow: owner, identityClaim: "sub", operations: [update, delete] }
+      {
+        allow: owner
+        identityClaim: "sub"
+        operations: [create, update, delete]
+      }
     ]
   ) {
   id: ID!

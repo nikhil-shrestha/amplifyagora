@@ -49,7 +49,7 @@ const MarketPage = (props) => {
     handleGetMarket();
 
     const createProductListener = API.graphql(
-      graphqlOperation(onCreateProduct)
+      graphqlOperation(onCreateProduct, { owner: user.attributes.sub })
     ).subscribe({
       next: ({ value }) => {
         const createdProduct = value.data.onCreateProduct;
@@ -66,7 +66,7 @@ const MarketPage = (props) => {
     });
 
     const updateProductListener = API.graphql(
-      graphqlOperation(onUpdateProduct)
+      graphqlOperation(onUpdateProduct, { owner: user.attributes.sub })
     ).subscribe({
       next: ({ value }) => {
         const updatedProduct = value.data.onCreateProduct;
@@ -87,7 +87,7 @@ const MarketPage = (props) => {
     });
 
     const deleteProductListener = API.graphql(
-      graphqlOperation(onDeleteProduct)
+      graphqlOperation(onDeleteProduct, { owner: user.attributes.sub })
     ).subscribe({
       next: ({ value }) => {
         const deletedProduct = value.data.onDeleteProduct;
