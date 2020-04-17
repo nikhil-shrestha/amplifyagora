@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { API, graphqlOperation, Auth, Hub } from 'aws-amplify';
 import { Authenticator, AmplifyTheme } from 'aws-amplify-react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory';
 
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -13,6 +14,7 @@ import { registerUser } from './graphql/mutations';
 
 import './App.css';
 
+export const history = createBrowserHistory();
 export const UserContext = React.createContext();
 
 function App() {
@@ -90,7 +92,7 @@ function App() {
     <Authenticator theme={theme} />
   ) : (
     <UserContext.Provider value={{ user }}>
-      <Router>
+      <Router history={history}>
         <>
           {/* Navigation */}
           <Navbar user={user} handleSignout={handleSignout} />
