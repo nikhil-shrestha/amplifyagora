@@ -21,10 +21,10 @@ const getUser = `
   query GetUser($id: ID!) {
     getUser(id: $id) {
       id
-      username
+      username 
       email
       registered
-      orders(sortDirection: DESC) {
+      orders(sortDirection: DESC, limit: 10) {
         items {
           id
           createdAt
