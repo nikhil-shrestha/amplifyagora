@@ -23,6 +23,7 @@ const NewProduct = (props) => {
     shipped: false,
     imagePreview: '',
   });
+  const [precentUploaded, setPrecentUploaded] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [image, setImage] = useState('');
 
@@ -39,6 +40,11 @@ const NewProduct = (props) => {
 
       const uploadedFile = await Storage.put(filename, image.file, {
         contentType: image.type,
+        progressCallback: (progress) => {
+          console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
+          const uploaded = Math.round((progress.loaded / progress.total) * 100);
+          setPrecentUploaded(uploaded);
+        },
       });
 
       const file = {
@@ -65,6 +71,7 @@ const NewProduct = (props) => {
         message: 'Product successfully created!',
         type: 'success',
       });
+      setIsUploading(false);
       setFormData({
         description: '',
         price: 0,
@@ -122,6 +129,14 @@ const NewProduct = (props) => {
           </Form.Item>
           {imagePreview && (
             <img className="image-preview" src={imagePreview} alt="Product" />
+          )}
+          {precentUploaded > 0 && (
+            <Progress
+              type="circle"
+              className="progress"
+              percentage={precentUploaded}
+              status="success"
+            />
           )}
           <PhotoPicker
             title="Product Image"
