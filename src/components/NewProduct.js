@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Storage, Auth, API, graphqlOperation } from 'aws-amplify';
 import { PhotoPicker } from 'aws-amplify-react';
 import {
   Form,
@@ -9,27 +10,71 @@ import {
   Progress,
 } from 'element-react';
 
-const NewProduct = () => {
+import { convertDollarsToCents } from '../utils';
+import { createProduct } from '../graphql/mutations';
+import aws_exports from '../aws-exports';
+
+const NewProduct = (props) => {
+  const { marketId } = props;
+
   const [formData, setFormData] = useState({
     description: '',
     price: 0,
     shipped: false,
     imagePreview: '',
   });
+  const [isUploading, setIsUploading] = useState(false);
   const [image, setImage] = useState('');
 
   const { description, price, shipped, imagePreview } = formData;
 
-  const handleAddProduct = () => {
-    console.log('Product Added');
-    console.log(formData);
-    setFormData({
-      description: '',
-      price: 0,
-      shipped: false,
-      imagePreview: '',
-      image: '',
-    });
+  const handleAddProduct = async () => {
+    try {
+      setIsUploading(true);
+      const visiblity = 'public';
+      const { identityId } = await Auth.currentCredentials();
+      const filename = `/${visiblity}/${identityId}/${Date.now()}-${
+        image.name
+      }`;
+
+      const uploadedFile = await Storage.put(filename, image.file, {
+        contentType: image.type,
+      });
+
+      const file = {
+        key: uploadedFile.key,
+        bucket: aws_exports.aws_user_files_s3_bucket,
+        region: aws_exports.aws_user_files_s3_bucket_region,
+      };
+
+      const input = {
+        productMarketId: marketId,
+        description,
+        price: convertDollarsToCents(price),
+        shipped,
+        file,
+      };
+
+      const { data } = await API.graphql(
+        graphqlOperation(createProduct, { input })
+      );
+      console.log('Created Product', data);
+
+      Notification({
+        title: 'Success',
+        message: 'Product successfully created!',
+        type: 'success',
+      });
+      setFormData({
+        description: '',
+        price: 0,
+        shipped: false,
+        imagePreview: '',
+        image: '',
+      });
+    } catch (err) {
+      console.error('error adding product', err);
+    }
   };
 
   return (
@@ -112,11 +157,12 @@ const NewProduct = () => {
           />
           <Form.Item>
             <Button
-              disabled={!image || !description || !price}
+              disabled={!image || !description || !price || isUploading}
               type="primary"
+              loading={isUploading}
               onClick={handleAddProduct}
             >
-              Add Product
+              {isUploading ? 'Uploading...' : 'Add Product'}
             </Button>
           </Form.Item>
         </Form>
