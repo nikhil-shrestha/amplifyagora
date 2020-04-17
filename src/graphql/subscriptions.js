@@ -68,8 +68,8 @@ export const onDeleteMarket = /* GraphQL */ `
   }
 `;
 export const onCreateProduct = /* GraphQL */ `
-  subscription OnCreateProduct($owner: String!) {
-    onCreateProduct(owner: $owner) {
+  subscription OnCreateProduct {
+    onCreateProduct {
       id
       description
       market {
