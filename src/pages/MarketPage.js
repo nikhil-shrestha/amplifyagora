@@ -6,6 +6,12 @@ import { Loading, Tabs, Icon } from 'element-react';
 import NewProduct from '../components/NewProduct';
 import Product from '../components/Product';
 
+import {
+  onCreateProduct,
+  onUpdateProduct,
+  onDeleteProduct,
+} from '../graphql/subscriptions';
+
 const getMarket = `
   query GetMarket($id: ID!) {
     getMarket(id: $id) {
@@ -41,6 +47,67 @@ const MarketPage = (props) => {
 
   useEffect(() => {
     handleGetMarket();
+
+    const createProductListener = API.graphql(
+      graphqlOperation(onCreateProduct, { owner: user.attributes.sub })
+    ).subscribe({
+      next: ({ value }) => {
+        const createdProduct = value.data.onCreateProduct;
+        setMarket((prevMarket) => {
+          const prevProducts = prevMarket.products.items.filter(
+            (item) => item.id !== createdProduct.id
+          );
+          const updatedProducts = [createdProduct, ...prevProducts];
+          const updatedMarket = { ...prevMarket };
+          updatedMarket.products.items = updatedProducts;
+          return updatedMarket;
+        });
+      },
+    });
+
+    const updateProductListener = API.graphql(
+      graphqlOperation(onUpdateProduct, { owner: user.attributes.sub })
+    ).subscribe({
+      next: ({ value }) => {
+        const updatedProduct = value.data.onCreateProduct;
+        setMarket((prevMarket) => {
+          const updatedProductIndex = prevMarket.products.items.findIndex(
+            (item) => item.id !== updatedProduct.id
+          );
+          const updatedProducts = [
+            ...prevMarket.products.items.slice(0, updatedProductIndex),
+            updatedProduct,
+            ...prevMarket.products.items.slice(updatedProductIndex + 1),
+          ];
+          const updatedMarket = { ...prevMarket };
+          updatedMarket.products.items = updatedProducts;
+          return updatedMarket;
+        });
+      },
+    });
+
+    const deleteProductListener = API.graphql(
+      graphqlOperation(onDeleteProduct, { owner: user.attributes.sub })
+    ).subscribe({
+      next: ({ value }) => {
+        const deletedProduct = value.data.onDeleteProduct;
+        setMarket((prevMarket) => {
+          const updatedProducts = prevMarket.products.items.filter(
+            (item) => item.id !== deletedProduct.id
+          );
+
+          const updatedMarket = { ...prevMarket };
+          updatedMarket.products.items = updatedProducts;
+          return updatedMarket;
+        });
+      },
+    });
+
+    return () => {
+      createProductListener.unsubscribe();
+      updateProductListener.unsubscribe();
+      deleteProductListener.unsubscribe();
+    };
   }, []);
 
   async function handleGetMarket() {
