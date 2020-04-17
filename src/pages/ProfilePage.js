@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, Auth } from 'aws-amplify';
 import {
   Table,
   Button,
@@ -52,6 +52,10 @@ const getUser = `
 const ProfilePage = (props) => {
   const { user, userAttributes } = props;
 
+  const [email, setEmail] = useState(userAttributes && userAttributes.email);
+  const [emailDialog, setEmailDialog] = useState(false);
+  const [verificationForm, setVerificationForm] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
   const [orders, setOrders] = useState([]);
   const [columns] = useState([
     { prop: 'name', width: '150' },
@@ -77,7 +81,11 @@ const ProfilePage = (props) => {
         switch (row.name) {
           case 'Email':
             return (
-              <Button type="info" size="small">
+              <Button
+                type="info"
+                size="small"
+                onClick={() => setEmailDialog(true)}
+              >
                 Edit
               </Button>
             );
@@ -105,6 +113,58 @@ const ProfilePage = (props) => {
     const input = { id: userId };
     const { data } = await API.graphql(graphqlOperation(getUser, input));
     setOrders(data.getUser.orders.items);
+  };
+
+  const handleUpdateEmail = async () => {
+    try {
+      const updatedAttributes = {
+        email,
+      };
+
+      const result = await Auth.updateUserAttributes(user, updatedAttributes);
+      if (result === 'SUCCESS') {
+        sendVerificationCode('email');
+      }
+    } catch (err) {
+      console.error(err);
+      Notification.error({
+        title: 'Error',
+        message: `${err.message || 'Error updating email'}`,
+      });
+    }
+  };
+
+  const sendVerificationCode = async (attr) => {
+    await Auth.verifyCurrentUserAttribute(attr);
+    setVerificationForm(true);
+    Message({
+      type: 'info',
+      customClass: 'message',
+      message: `Verification code sent to ${email}`,
+    });
+  };
+
+  const handleVerifyEmail = async (attr) => {
+    try {
+      const result = await Auth.verifyCurrentUserAttributeSubmit(
+        attr,
+        verificationCode
+      );
+      Notification({
+        title: 'Success',
+        message: 'Email sucessfully verified!',
+        type: `${result.toLowerCase()}`,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      Notification.error({
+        title: 'Error',
+        message: `${err.message || 'Error updating email'}`,
+      });
+    }
   };
 
   return (
@@ -189,6 +249,46 @@ const ProfilePage = (props) => {
             ))}
           </Tabs.Pane>
         </Tabs>
+
+        {/* Email Dialog */}
+        <Dialog
+          size="large"
+          customClass="dialog"
+          title="Edit Email"
+          visible={emailDialog}
+          onCancel={() => setEmailDialog(false)}
+        >
+          <Dialog.Body>
+            <Form labelPosition="top">
+              <Form.Item label="Email">
+                <Input value={email} onChange={(email) => setEmail(email)} />
+              </Form.Item>
+              {verificationForm && (
+                <Form.Item label="Emter Verification Code" labelWidth="120">
+                  <Input
+                    onChange={(verificationCode) =>
+                      setVerificationCode(verificationCode)
+                    }
+                    value={verificationCode}
+                  />
+                </Form.Item>
+              )}
+            </Form>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Button onCancel={() => setEmailDialog(false)}>Cancel</Button>
+            {!verificationForm && (
+              <Button type="primary" onClick={handleUpdateEmail}>
+                Save
+              </Button>
+            )}
+            {verificationForm && (
+              <Button type="primary" onClick={() => handleVerifyEmail('email')}>
+                Submit
+              </Button>
+            )}
+          </Dialog.Footer>
+        </Dialog>
       </>
     )
   );
