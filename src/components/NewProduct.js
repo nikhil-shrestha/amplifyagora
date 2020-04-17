@@ -14,12 +14,22 @@ const NewProduct = () => {
     description: '',
     price: 0,
     shipped: false,
+    imagePreview: '',
   });
+  const [image, setImage] = useState('');
 
-  const { description, price, shipped } = formData;
+  const { description, price, shipped, imagePreview } = formData;
 
   const handleAddProduct = () => {
     console.log('Product Added');
+    console.log(formData);
+    setFormData({
+      description: '',
+      price: 0,
+      shipped: false,
+      imagePreview: '',
+      image: '',
+    });
   };
 
   return (
@@ -65,9 +75,47 @@ const NewProduct = () => {
               </Radio>
             </div>
           </Form.Item>
-          <PhotoPicker />
+          {imagePreview && (
+            <img className="image-preview" src={imagePreview} alt="Product" />
+          )}
+          <PhotoPicker
+            title="Product Image"
+            preview="hidden"
+            onLoad={(url) => setFormData({ ...formData, imagePreview: url })}
+            onPick={(file) => {
+              console.log(file);
+              setImage(file);
+            }}
+            theme={{
+              formContainer: {
+                margin: 0,
+                padding: '0.8em',
+              },
+              formSection: {
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+              sectionBody: {
+                margin: 0,
+                width: '250px',
+              },
+              sectionHeader: {
+                padding: '0.2em',
+                color: 'var(--darkAmazonOrange)',
+              },
+              // photoPickerButton: {
+              //   display: 'none',
+              // },
+            }}
+          />
           <Form.Item>
-            <Button type="primary" onClick={handleAddProduct}>
+            <Button
+              disabled={!image || !description || !price}
+              type="primary"
+              onClick={handleAddProduct}
+            >
               Add Product
             </Button>
           </Form.Item>
