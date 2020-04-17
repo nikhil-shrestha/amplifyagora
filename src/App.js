@@ -19,6 +19,7 @@ export const UserContext = React.createContext();
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userAttributes, setUserAttributes] = useState(null);
 
   const onHubCapsule = (capsule) => {
     switch (capsule.payload.event) {
@@ -46,9 +47,17 @@ function App() {
     const user = await Auth.currentAuthenticatedUser();
     if (user) {
       setUser(user);
+      getUserAttributes(user);
       return;
     }
     setUser(null);
+  };
+
+  const getUserAttributes = async (authUserData) => {
+    const attributesArr = await Auth.userAttributes(authUserData);
+    console.log({ attributesArr });
+    const attributesObj = Auth.attributesToObject(attributesArr);
+    setUserAttributes(attributesObj);
   };
 
   const registerNewUser = async (signinData) => {
@@ -91,7 +100,7 @@ function App() {
   return !user ? (
     <Authenticator theme={theme} />
   ) : (
-    <UserContext.Provider value={{ user }}>
+    <UserContext.Provider value={{ user, userAttributes }}>
       <Router history={history}>
         <>
           {/* Navigation */}
@@ -103,7 +112,9 @@ function App() {
               <Route
                 exact
                 path="/profile"
-                component={() => <ProfilePage user={user} />}
+                component={() => (
+                  <ProfilePage user={user} userAttributes={userAttributes} />
+                )}
               />
               <Route
                 exact
