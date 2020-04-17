@@ -5,15 +5,32 @@ import { Loading, Tabs, Icon } from 'element-react';
 
 import NewProduct from '../components/NewProduct';
 import Product from '../components/Product';
-import { getMarket } from '../graphql/queries';
 
-const useStateWithCallback = (initialState, callback) => {
-  const [state, setState] = useState(initialState);
-
-  useEffect(() => callback(state), [state, callback]);
-
-  return [state, setState];
-};
+const getMarket = `
+  query GetMarket($id: ID!) {
+    getMarket(id: $id) {
+      id
+      name
+      products {
+        items {
+          id
+          description
+          price
+          shipped
+          owner
+          file {
+            key
+          }
+          createdAt
+        }
+        nextToken
+      }
+      tags
+      owner
+      createdAt
+    }
+  }
+`;
 
 const MarketPage = (props) => {
   const { marketId, user } = props;
@@ -95,7 +112,7 @@ const MarketPage = (props) => {
           <div className="product-list">
             {market.products.items &&
               market.products.items.map((product) => (
-                <Product product={product} />
+                <Product key={product.id} product={product} />
               ))}
           </div>
         </Tabs.Pane>
