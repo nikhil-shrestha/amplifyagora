@@ -12,6 +12,8 @@ import {
   onDeleteProduct,
 } from '../graphql/subscriptions';
 
+import { formatProductDate } from '../utils';
+
 const getMarket = `
   query GetMarket($id: ID!) {
     getMarket(id: $id) {
@@ -154,7 +156,7 @@ const MarketPage = (props) => {
       <div className="items-center pt-2">
         <span style={{ color: 'var(--lightSquidInk)', paddingBottom: '1em' }}>
           <Icon name="date" className="icon" />
-          {market.createdAt}
+          {formatProductDate(market.createdAt)}
         </span>
       </div>
 

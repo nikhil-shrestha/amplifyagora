@@ -15,7 +15,7 @@ import {
   Tag,
 } from 'element-react';
 
-import { convertCentsToDollar } from '../utils';
+import { convertCentsToDollar, formatOrderDate } from '../utils';
 
 const getUser = `
   query GetUser($id: ID!) {
@@ -253,7 +253,7 @@ const ProfilePage = (props) => {
                     <p>Order Id: {order.id}</p>
                     <p>Product Description: {order.product.description}</p>
                     <p>Price: ${convertCentsToDollar(order.product.price)}</p>
-                    <p>Purchases on {order.createdAt}</p>
+                    <p>Purchases on {formatOrderDate(order.createdAt)}</p>
                     {order.shippingAddress && (
                       <>
                         Shipping Address
