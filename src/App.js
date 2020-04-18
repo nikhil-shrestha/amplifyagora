@@ -120,7 +120,11 @@ function App() {
                 exact
                 path="/markets/:marketId"
                 component={({ match }) => (
-                  <MarketPage user={user} marketId={match.params.marketId} />
+                  <MarketPage
+                    user={user}
+                    userAttributes={userAttributes}
+                    marketId={match.params.marketId}
+                  />
                 )}
               />
             </Switch>

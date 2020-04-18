@@ -39,10 +39,11 @@ const getMarket = `
 `;
 
 const MarketPage = (props) => {
-  const { marketId, user } = props;
+  const { marketId, user, userAttributes } = props;
 
   const [market, setMarket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isMarketOwner, setIsMarketOwner] = useState(false);
 
   useEffect(() => {
@@ -121,8 +122,15 @@ const MarketPage = (props) => {
     console.log({ data });
     setMarket(data.getMarket);
     checkMarketOwner(data.getMarket);
+    checkEmailVerified();
     setIsLoading(false);
   }
+
+  const checkEmailVerified = () => {
+    if (userAttributes) {
+      setIsEmailVerified(userAttributes.email_verified);
+    }
+  };
 
   const checkMarketOwner = (market) => {
     if (user) {
@@ -162,7 +170,13 @@ const MarketPage = (props) => {
             }
             name="1"
           >
-            <NewProduct marketId={marketId} />
+            {isEmailVerified ? (
+              <NewProduct marketId={marketId} />
+            ) : (
+              <Link to="/profile" className="header">
+                Verify your Email Before Adding Products
+              </Link>
+            )}
           </Tabs.Pane>
         )}
 

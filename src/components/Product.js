@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { API, graphqlOperation } from 'aws-amplify';
 import { S3Image } from 'aws-amplify-react';
 import {
@@ -81,6 +82,8 @@ const Product = (props) => {
       {({ userAttributes }) => {
         const isProductOwner =
           userAttributes && userAttributes.sub === product.owner;
+
+        const isEmailVerified = userAttributes && userAttributes.email_verified;
         return (
           <div className="card-container">
             <Card bodyStyle={{ padding: 0, minWidth: '200px' }}>
@@ -109,11 +112,17 @@ const Product = (props) => {
                   <span className="mx-1">
                     ${convertCentsToDollar(product.price)}
                   </span>
-                  {!isProductOwner && (
-                    <PayButton
-                      product={product}
-                      userAttributes={userAttributes}
-                    />
+                  {isEmailVerified ? (
+                    !isProductOwner && (
+                      <PayButton
+                        product={product}
+                        userAttributes={userAttributes}
+                      />
+                    )
+                  ) : (
+                    <Link to="/profile" className="link">
+                      Verify Email
+                    </Link>
                   )}
                 </div>
               </div>
